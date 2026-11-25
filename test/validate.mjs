@@ -46,14 +46,24 @@ for (const locale of ['en', 'zh']) {
   assert.ok(data.meta.description.length > 160, `${locale} description is substantive`)
   assert.equal(data.meta.detail, locale === 'zh' ? 'docs/DETAIL.zh.md' : 'docs/DETAIL.md')
   const detail = read(data.meta.detail).trim()
-  assert.match(detail, /^!\[[^\]]+\]\(preview\.svg\)$/, `${locale} detail is one image line`)
-  assert.ok(fs.existsSync(path.join(root, path.dirname(data.meta.detail), 'preview.svg')))
+  const image = /^!\[[^\]]+\]\(([^)]+)\)$/.exec(detail)
+  assert.ok(image, `${locale} detail is one image line`)
+  assert.ok(fs.existsSync(path.join(root, path.dirname(data.meta.detail), image[1])), `${locale} detail image exists`)
+}
+
+// Marketplace screenshots are real files and stay inside the package.
+const screenshots = json('screenshots.json')
+assert.ok(Array.isArray(screenshots) && screenshots.length >= 1 && screenshots.length <= 8)
+for (const shot of screenshots) {
+  assert.equal(typeof shot, 'string')
+  assert.ok(!shot.startsWith('/') && !shot.split('/').includes('..'), `screenshot path is relative: ${shot}`)
+  assert.ok(fs.existsSync(path.join(root, shot)), `screenshot exists: ${shot}`)
 }
 
 // Icon: SVG, small, self-contained (no script/style/image/foreignObject).
 const icon = read('icon.svg')
 assert.ok(Buffer.byteLength(icon) < 256 * 1024)
-assert.match(icon, /viewBox="0 0 256 214"/)
+assert.match(icon, /viewBox="0 0 64 64"/)
 for (const forbidden of ['<script', '<style', '<image', 'foreignObject', 'onload=']) {
   assert.ok(!icon.includes(forbidden), `icon must not contain ${forbidden}`)
 }

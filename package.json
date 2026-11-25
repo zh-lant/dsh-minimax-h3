@@ -2,7 +2,7 @@
   "name": "dsh-minimax-h3",
   "version": "1.3.0",
   "type": "module",
-  "description": "MiniMax H3 image and video tools, a local balance ledger, and a MiniMax settings page for DeepSeek Harness.",
+  "description": "MiniMax H3 image and video generation in a right-sidebar DeepSeek Harness workspace.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zh-lant/dsh-minimax-h3.git"

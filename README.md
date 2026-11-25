@@ -1,26 +1,43 @@
 # dsh-minimax-h3
 
-MiniMax H3 image and video tools, a local balance ledger, and a MiniMax
-workspace in the right sidebar of DeepSeek Harness.
+A MiniMax H3 workspace for DeepSeek Harness. It puts text-to-image, image
+editing, text-to-video, first/last-frame video, and reference-to-video in one
+right-sidebar tab, and exposes six agent tools for the same tasks.
 
-- Pure ESM. No build step, no runtime dependencies.
-- Six tools: `minimax_h3_image`, `minimax_h3_edit_image`, `minimax_h3_video`,
-  `minimax_h3_enhance_prompt`, `minimax_h3_media_status`,
-  `minimax_h3_media_list`.
-- Right sidebar → guide → MiniMax: create, history, settings.
-- Create: pick an image or video task, fill its parameters, submit directly.
-- History: filter by type/status, read dates, open results, modify, or delete.
-- Running videos are queried automatically every 7 seconds; history shows elapsed
-  time and the last check, and stops auto-checking after 30 minutes.
-- Failed videos can be retried in text, first/last-frame, or reference mode when
-  the original source materials are available.
-- Modify: select a result in History, then describe the change in the composer.
-- Settings: connection, models, interface language, local balance and alert.
+![MiniMax H3 right sidebar image task](docs/screenshots/01-new-image.png)
+
+## What you can do
+
+- **New**: choose an image or video task, fill its own parameters, attach
+  reference images, videos, or audio, preview them as thumbnails or waveforms,
+  and submit without leaving the sidebar.
+- **History**: filter by type or status, read dates and local cost estimates,
+  open generated files, copy paths, open the containing folder, retry failed
+  videos with their original source materials, and delete records with optional
+  media cleanup.
+- **Running videos**: check status automatically every seven seconds, show
+  elapsed time and the last check, and stop auto-checking after 30 minutes.
+- **Modify**: insert the task ID into the composer from History, then describe
+  the change; the conversation agent can call the image edit or video reference
+  tools with that context.
+- **Settings**: MiniMax connection, default image/video models, interface
+  language, local balance, and an alert threshold.
+
+## Limits and data
+
+- Image requests are synchronous and non-idempotent; they are never retried
+  automatically, because a retry can be billed again.
+- Video submission and download are separate; a failed download can be retried
+  without submitting the generation again.
+- Balances and prices are local estimates, not MiniMax's platform statement; an
+  ordinary key cannot read the real balance.
+- Prompts and reference media are sent to the configured MiniMax endpoint.
+  Generated files, task records, pending references, and settings stay under
+  `$DSH_HOME/plugins/dsh-minimax-h3` by default. The plugin has no telemetry of
+  its own.
+- The API key is read from the shared `MINIMAX_API_KEY` credential. Uninstalling
+  keeps credentials, generated files, and task records.
 - Menus support click-outside/Escape dismissal and keyboard arrow navigation.
-- Data and generated media live under `$DSH_HOME/plugins/dsh-minimax-h3` by
-  default; the API key is read from the shared `MINIMAX_API_KEY` credential.
-- Balance and prices are local estimates; an ordinary MiniMax key cannot read
-  the real balance.
 
 ## Requirements
 

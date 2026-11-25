@@ -1,1 +1,1 @@
-![MiniMax 右侧栏：新建、历史、设置与修改流程](preview.svg)
+![MiniMax H3 右侧栏：图片任务表单、模型、提示词示例与生成参数](screenshots/01-new-image.png)

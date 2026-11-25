@@ -541,30 +541,46 @@ function findTaskAnywhere(store, taskId) {
   return undefined
 }
 
+function realPathInside(file, roots) {
+  try {
+    const real = fs.realpathSync(path.resolve(String(file || '')))
+    const stat = fs.statSync(real)
+    if (!stat.isFile()) return ''
+    for (const root of roots) {
+      let realRoot
+      try {
+        realRoot = fs.realpathSync(path.resolve(root))
+      } catch {
+        continue
+      }
+      if (real === realRoot || real.startsWith(realRoot + path.sep)) return real
+    }
+  } catch {}
+  return ''
+}
+
 function serveFile(req, res, store, taskId, index) {
   const task = findTaskAnywhere(store, taskId)
   if (!task) return json(res, 404, { ok: false, error: '任务不存在' })
   const file = task.files?.[Number(index)]
   if (!file || !file.path) return json(res, 404, { ok: false, error: '文件不存在' })
-  const resolved = path.resolve(file.path)
-  const root = path.resolve(store.mediaRoot)
-  if (!resolved.startsWith(root + path.sep) || !fs.existsSync(resolved)) {
-    return json(res, 403, { ok: false, error: '路径越界或文件缺失' })
-  }
+  const resolved = realPathInside(file.path, [store.mediaRoot])
+  if (!resolved) return json(res, 403, { ok: false, error: '路径越界或文件缺失' })
   return serveResolvedFile(req, res, resolved)
 }
 
 function serveRefFile(req, res, store, file) {
-  const resolved = path.resolve(String(file || ''))
-  const roots = [path.resolve(store.refsDir), path.resolve(store.mediaRoot)]
-  if (!roots.some((root) => resolved.startsWith(root + path.sep)) || !fs.existsSync(resolved)) {
-    return json(res, 403, { ok: false, error: '参考文件不存在' })
-  }
+  const resolved = realPathInside(file, [store.refsDir, store.mediaRoot])
+  if (!resolved) return json(res, 403, { ok: false, error: '参考文件不存在' })
   return serveResolvedFile(req, res, resolved)
 }
 
 function serveResolvedFile(req, res, resolved) {
   const stat = fs.statSync(resolved)
+  if (!stat.isFile()) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' })
+    return res.end('not a file')
+  }
   const ext = path.extname(resolved).toLowerCase()
   const type =
     ext === '.png' ? 'image/png'
@@ -597,19 +613,19 @@ function serveResolvedFile(req, res, resolved) {
       'Content-Range': `bytes ${start}-${end}/${stat.size}`,
       'Content-Length': end - start + 1,
     })
-    fs.createReadStream(resolved, { start, end }).pipe(res)
+    fs.createReadStream(resolved, { start, end }).on('error', () => res.destroy()).pipe(res)
     return
   }
   res.writeHead(200, { ...headers, 'Content-Length': stat.size })
-  fs.createReadStream(resolved).pipe(res)
+  fs.createReadStream(resolved).on('error', () => res.destroy()).pipe(res)
 }
 
 function openWithDefaultApp(file, log) {
   const resolved = path.resolve(String(file || ''))
   if (!fs.existsSync(resolved)) throw new MinimaxError('文件不存在。', { code: 'FILE_NOT_FOUND' })
   const platform = process.platform
-  const command = platform === 'win32' ? 'cmd.exe' : platform === 'darwin' ? 'open' : 'xdg-open'
-  const args = platform === 'win32' ? ['/c', 'start', '', resolved] : [resolved]
+  const command = platform === 'win32' ? 'explorer.exe' : platform === 'darwin' ? 'open' : 'xdg-open'
+  const args = [resolved]
   try {
     const child = spawn(command, args, { detached: true, stdio: 'ignore', windowsHide: true })
     child.on('error', (error) => log('open failed', error))
