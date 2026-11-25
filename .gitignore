@@ -1,0 +1,8 @@
+node_modules/
+.tmp*
+*.log
+minimax-h3-data/
+release/
+.env
+*.pem
+.DS_Store
