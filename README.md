@@ -1,5 +1,7 @@
 # dsh-minimax-h3
 
+English | [中文](README.zh.md)
+
 A MiniMax H3 workspace for DeepSeek Harness. It puts text-to-image, image
 editing, text-to-video, first/last-frame video, and reference-to-video in one
 right-sidebar tab, and exposes six agent tools for the same tasks.
