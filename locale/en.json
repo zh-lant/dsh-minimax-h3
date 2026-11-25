@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "MiniMax H3",
+    "description": "MiniMax H3 image and video tools, with the whole interface in one right-sidebar MiniMax workspace. The sidebar creates: New lets you pick an image or video task, fill its parameters, and submit directly; History filters by type/status, shows dates, opens results, modifies them, or deletes them; Settings holds connection, models, UI language, balance, and alert. The composer describes changes: choosing Modify in History inserts the task ID into the draft so the conversation agent can call the image edit or video reference tools. Balances and prices are local estimates, not the platform statement; an ordinary key cannot read the real balance. Image generation is non-idempotent and is never retried automatically; video submission is separate from download, so a failed download can be retried alone. The API key is stored in the MINIMAX_API_KEY credential and is shared with other MiniMax plugins; uninstalling keeps credentials, generated files, and task records.",
+    "detail": "docs/DETAIL.md"
+  }
+}

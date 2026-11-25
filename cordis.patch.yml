@@ -1,0 +1,13 @@
+# dsh-minimax-h3 bundle patch
+#
+# The Host half is one ordinary Cordis row. Its Client half is declared by the
+# package's dsh.client manifest entry and is loaded by the Web client module
+# table, so no second Loader row is needed (and two rows would mount the UI
+# twice).
+#
+# Do not put a machine-specific storage path here: the default is
+# $DSH_HOME/plugins/dsh-minimax-h3. A user who needs another location can
+# override it in the profile.
+- insert:
+    - id: minimax-h3
+      name: dsh-minimax-h3
